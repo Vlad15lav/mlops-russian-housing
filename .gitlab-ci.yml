@@ -1,0 +1,20 @@
+image: python:3.11
+
+stages:
+  - build
+  - test
+
+before_script:
+  - python --version
+
+build-job:
+  stage: build
+  script:
+      - echo "Installing packages...."
+
+lintest:
+  stage: test
+  script:
+      - echo "Starting linters..."
+      - pip install flake8
+      - flake8 ./

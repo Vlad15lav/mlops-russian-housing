@@ -1,0 +1,16 @@
+# stages:
+#   select_region:
+#     cmd: python src/data/select_region.py data/raw/all_v2.csv data/interim/data_regional.csv 2661
+#     deps:
+#       - data/raw/all_v2.csv
+#       - src/data/select_region.py
+#     outs:
+#       - data/interim/data_regional.csv
+
+#   clean_data:
+#     cmd: python src/data/clean_data.py data/interim/data_regional.csv data/interim/data_cleaned.csv
+#     deps:
+#       - data/interim/data_regional.csv
+#       - src/data/clean_data.py
+#     outs:
+#       - data/interim/data_cleaned.csv
