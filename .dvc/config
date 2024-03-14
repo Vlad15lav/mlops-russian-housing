@@ -1,0 +1,9 @@
+[core]
+    remote = remote
+    autostage = false
+
+['remote "remote"']
+    url = s3://dvc-data
+    endpointurl = http://localhost:9000
+    access_key_id = minioroot
+    secret_access_key = minioroot
