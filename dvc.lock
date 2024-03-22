@@ -1,0 +1,67 @@
+schema: '2.0'
+stages:
+  download_raw_data:
+    cmd: python src/data/download_raw_data.py
+    deps:
+    - path: src/data/download_raw_data.py
+      hash: md5
+      md5: 5c9c2ed558e18f4be52717be34b687b7
+      size: 402
+    outs:
+    - path: data/raw/houses_dataset.csv
+      hash: md5
+      md5: c669e67d775ed4fe461cbd2e1528b774
+      size: 22427
+  data_filling:
+    cmd: python src/data/data_filling.py data/raw/houses_dataset.csv data/interim/fill_data.csv
+    deps:
+    - path: data/raw/houses_dataset.csv
+      hash: md5
+      md5: c669e67d775ed4fe461cbd2e1528b774
+      size: 22427
+    - path: src/data/data_filling.py
+      hash: md5
+      md5: b6648ebf332ded2b12818008ce62c594
+      size: 1345
+    outs:
+    - path: data/interim/fill_data.csv
+      hash: md5
+      md5: ebe7fdb9fd3951f00236ea69a863ee8c
+      size: 26368
+  make_features:
+    cmd: python src/data/make_features.py data/interim/fill_data.csv data/interim/features_data.csv
+    deps:
+    - path: data/interim/fill_data.csv
+      hash: md5
+      md5: ebe7fdb9fd3951f00236ea69a863ee8c
+      size: 26368
+    - path: src/data/make_features.py
+      hash: md5
+      md5: abb9dc9aad5f1adf20ee74a1e4c370ed
+      size: 1517
+    outs:
+    - path: data/interim/features_data.csv
+      hash: md5
+      md5: 46fa55c52f4e716935098130fc516095
+      size: 16125
+  make_dataset:
+    cmd: python src/data/make_dataset.py data/interim/features_data.csv data/processed
+      85
+    deps:
+    - path: data/interim/features_data.csv
+      hash: md5
+      md5: 46fa55c52f4e716935098130fc516095
+      size: 16125
+    - path: src/data/make_dataset.py
+      hash: md5
+      md5: 4f862bc0567e085bf29bee82987025a0
+      size: 1108
+    outs:
+    - path: data/processed/test_houses.csv
+      hash: md5
+      md5: 1841fa9cb8f661302ff9e29339f386c3
+      size: 2609
+    - path: data/processed/train_houses.csv
+      hash: md5
+      md5: 7ef49bea238bb61085a57f3371db9b23
+      size: 13652
