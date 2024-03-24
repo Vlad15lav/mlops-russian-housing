@@ -7,25 +7,25 @@ stages:
       - data/raw/houses_dataset.csv
 
   data_filling:
-    cmd: python src/data/data_filling.py data/raw/houses_dataset.csv data/interim/fill_data.csv
+    cmd: python src/features/data_filling.py data/raw/houses_dataset.csv data/interim/fill_data.csv
     deps:
-      - src/data/data_filling.py
+      - src/features/data_filling.py
       - data/raw/houses_dataset.csv
     outs:
       - data/interim/fill_data.csv
 
   make_features:
-    cmd: python src/data/make_features.py data/interim/fill_data.csv data/interim/features_data.csv
+    cmd: python src/features/make_features.py data/interim/fill_data.csv data/interim/features_data.csv
     deps:
-      - src/data/make_features.py
+      - src/features/make_features.py
       - data/interim/fill_data.csv
     outs:
       - data/interim/features_data.csv
 
   make_dataset:
-    cmd: python src/data/make_dataset.py data/interim/features_data.csv data/processed 85
+    cmd: python src/features/make_dataset.py data/interim/features_data.csv data/processed 85
     deps:
-      - src/data/make_dataset.py
+      - src/features/make_dataset.py
       - data/interim/features_data.csv
     outs:
       - data/processed/train_houses.csv

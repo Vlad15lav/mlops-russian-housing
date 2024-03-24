@@ -65,68 +65,68 @@ services:
       - "9001:9001"
     networks:
       - minio_net
-      - mlops-russian-housing_default
+      # - mlops-russian-housing_default
     volumes:
       - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - minio
 
   # Сервер база данных Postgres
-  # db:
-  #   container_name: postgres
-  #   image: postgres:16.2-alpine3.19
-  #   restart: always
-  #   environment:
-  #     POSTGRES_USER: ${POSTGRES_USER}
-  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-  #     POSTGRES_DB: ${POSTGRES_DB}
-  #     PGDATA: /data/postgres
-  #   volumes:
-  #     - postgres-data:/data/postgres
-  #   ports:
-  #     - "5432:5432"
-  #   networks:
-  #     - postgres_net
+  db:
+    container_name: postgres
+    image: postgres:16.2-alpine3.19
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: /data/postgres
+    volumes:
+      - postgres-data:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres_net
   
-  # # UI сервер для Postgres
-  # pgadmin:
-  #   container_name: pgadmin
-  #   image: dpage/pgadmin4
-  #   restart: always
-  #   environment:
-  #     PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
-  #     PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-  #   volumes:
-  #      - pgadmin-data:/var/lib/pgadmin
-  #   ports:
-  #     - "5050:80"
-  #   networks:
-  #     - postgres_net
+  # UI сервер для Postgres
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    volumes:
+       - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - postgres_net
   
-  # # MLFlow Tracking сервер
-  # mlflow:
-  #   container_name: mlflow_server
-  #   build: ./docker/mlflow_image
-  #   image: mlflow_server
-  #   restart: always
-  #   environment:
-  #     AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER}
-  #     AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
-  #     MLFLOW_S3_ENDPOINT_URL: ${MLFLOW_S3_ENDPOINT_URL}
-  #   command: >
-  #     mlflow server
-  #     --backend-store-uri postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-  #     --serve-artifacts
-  #     --artifacts-destination s3://${AWS_S3_BUCKET}
-  #     --host 0.0.0.0
-  #   ports:
-  #     - "5000:5000"
-  #   networks:
-  #     - minio_net
-  #     - postgres_net
-  #   depends_on:
-  #     - minio
-  #     - db
+  # MLFlow Tracking сервер
+  mlflow:
+    container_name: mlflow_server
+    build: ./docker/mlflow_image
+    image: mlflow_server
+    restart: always
+    environment:
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
+      MLFLOW_S3_ENDPOINT_URL: ${MLFLOW_S3_ENDPOINT_URL}
+    command: >
+      mlflow server
+      --backend-store-uri postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      --serve-artifacts
+      --artifacts-destination s3://${AWS_S3_BUCKET}
+      --host 0.0.0.0
+    ports:
+      - "5000:5000"
+    networks:
+      - minio_net
+      - postgres_net
+    depends_on:
+      - minio
+      - db
 
 volumes:
   postgres-data:
@@ -135,8 +135,8 @@ volumes:
     name: pgadmin-data
 
 networks:
-  mlops-russian-housing_default:
-    external: true
+  # mlops-russian-housing_default:
+  #   external: true
   minio_net:
     name: minio_net
     driver: bridge

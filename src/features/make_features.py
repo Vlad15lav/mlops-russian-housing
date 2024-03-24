@@ -15,6 +15,8 @@ USE_FEATURES = (
     'passanger_elevator'
 )
 
+TARGET_FEATURE = 'price'
+
 
 @click.command()
 @click.argument('path_data', type=click.Path(exists=True))
@@ -23,7 +25,7 @@ def make_feature(
         path_data: str,
         path_save: str,
         col_features: list = USE_FEATURES,
-        target_col: str = None
+        target_col: str = TARGET_FEATURE
         ):
     """Функция для генерация признаков
 
