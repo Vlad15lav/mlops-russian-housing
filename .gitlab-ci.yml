@@ -1,20 +1,61 @@
 image: python:3.11
 
+cache:
+  key:
+    files:
+      - .gitlab-ci.yml
+    pregix: ${CI_JOB_NAME}
+  paths:
+    - .cache/pip
+    - venv/
+
 stages:
-  - build
-  - test
+  - linter
+  - test-data
+  - pytest
+  # - build
+  # - deploy
 
 before_script:
   - python --version
+  - python -m venv ./venv
+  - ./venv/Scripts/activate
 
-build-job:
-  stage: build
+linter_job:
+  stage: linter
+  only: test
   script:
-      - echo "Installing packages...."
+    - echo "Starting linters..."
+    - pip install flake8
+    - flake8 ./
 
-lintest:
-  stage: test
+data_quality_job:
+  stage: test-data
+  only: test-data
   script:
-      - echo "Starting linters..."
-      - pip install flake8
-      - flake8 ./
+    - echo "Starting DVC check..."
+    - pip install dvc
+    - dvc pull
+    - dvc repro
+
+pytest_job:
+  stage: pytest
+  only: test-code
+  script:
+    - echo "Starting pytest..."
+    - pip install pytest, great_expectations
+    - pytest ./test
+
+# build_job:
+#   stage: build
+#   only: deploy
+#   when: master
+#   script:
+#     - echo "Starting build docker image..."
+
+# deploy_job:
+#   stage: deploy
+#   only: deploy
+#   when: master
+#   script:
+#     - echo "Starting deploy application..."
