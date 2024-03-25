@@ -28,7 +28,9 @@ linter_job:
   script:
     - echo "Starting linters..."
     - pip install flake8
-    - flake8 ./
+    - flake8 ./src
+    - flake8 ./test
+    - flake8 ./dags
 
 data_quality_job:
   stage: test-data
