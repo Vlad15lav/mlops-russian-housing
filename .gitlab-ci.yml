@@ -38,7 +38,7 @@ data_quality_job:
     - test-data
   script:
     - echo "Starting DVC check..."
-    - pip install dvc
+    - pip install dvc, dvc_s3
     - dvc pull
     - dvc repro
 
@@ -48,7 +48,7 @@ pytest_job:
     - test-code
   script:
     - echo "Starting pytest..."
-    - pip install pytest, great_expectations
+    - pip install pandas, pytest, great_expectations
     - pytest ./test
 
 # build_job:
