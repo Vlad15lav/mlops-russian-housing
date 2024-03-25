@@ -48,7 +48,8 @@ pytest_job:
     - test-code
   script:
     - echo "Starting pytest..."
-    - pip install pandas, pytest, great_expectations
+    - pip install dvc, dvc_s3, pandas, pytest, great_expectations
+    - dvc pull
     - pytest ./test
 
 # build_job:
