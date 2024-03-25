@@ -23,7 +23,7 @@ before_script:
 
 linter_job:
   stage: linter
-  only: test
+  tags: test
   script:
     - echo "Starting linters..."
     - pip install flake8
@@ -31,7 +31,7 @@ linter_job:
 
 data_quality_job:
   stage: test-data
-  only: test-data
+  tags: test-data
   script:
     - echo "Starting DVC check..."
     - pip install dvc
@@ -40,7 +40,7 @@ data_quality_job:
 
 pytest_job:
   stage: pytest
-  only: test-code
+  tags: test-code
   script:
     - echo "Starting pytest..."
     - pip install pytest, great_expectations
@@ -48,14 +48,16 @@ pytest_job:
 
 # build_job:
 #   stage: build
-#   only: deploy
-#   when: master
+#   tags: deploy
+#   rules:
+#     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
 #   script:
 #     - echo "Starting build docker image..."
 
 # deploy_job:
 #   stage: deploy
-#   only: deploy
-#   when: master
+#   tags: deploy
+#   rules:
+#     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
 #   script:
 #     - echo "Starting deploy application..."
