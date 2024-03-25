@@ -7,7 +7,7 @@ cache:
     prefix: ${CI_JOB_NAME}
   paths:
     - .cache/pip
-    - venv/
+    - env/
 
 stages:
   - linter
@@ -18,8 +18,8 @@ stages:
 
 before_script:
   - python --version
-  - python -m venv ./venv
-  - ./venv/Scripts/activate
+  - python -m venv ./env
+  - ./env/Scripts/activate
 
 linter_job:
   stage: linter
