@@ -37,21 +37,21 @@ stages:
       size: 26368
     - path: src/features/make_features.py
       hash: md5
-      md5: f29822eef37cb80e50d2dafa3c0f7cfc
-      size: 1555
+      md5: 8c20e70240cf2596535389259f0af229
+      size: 1779
     outs:
     - path: data/interim/features_data.csv
       hash: md5
-      md5: c8934bcabdeb54a871736d377dc5cdfd
-      size: 17774
+      md5: f2b88596be5907287fc82c2530d4f7be
+      size: 15742
   make_dataset:
     cmd: python src/features/make_dataset.py data/interim/features_data.csv data/processed
       85
     deps:
     - path: data/interim/features_data.csv
       hash: md5
-      md5: c8934bcabdeb54a871736d377dc5cdfd
-      size: 17774
+      md5: f2b88596be5907287fc82c2530d4f7be
+      size: 15742
     - path: src/features/make_dataset.py
       hash: md5
       md5: 4f862bc0567e085bf29bee82987025a0
@@ -59,9 +59,24 @@ stages:
     outs:
     - path: data/processed/test_houses.csv
       hash: md5
-      md5: dd70fc52f605966e1ca254ac86b46bd2
-      size: 2871
+      md5: b933f8673e11fafd65cdf4a88b242a22
+      size: 2538
     - path: data/processed/train_houses.csv
       hash: md5
-      md5: d08ff33ddf9ba3a7e9b98307a2c6213f
-      size: 15045
+      md5: 5358968aa60b50cd57f72d08d575a5c9
+      size: 13327
+  train_model:
+    cmd: python src/models/train_model.py
+    deps:
+    - path: data/processed/test_houses.csv
+      hash: md5
+      md5: b933f8673e11fafd65cdf4a88b242a22
+      size: 2538
+    - path: data/processed/train_houses.csv
+      hash: md5
+      md5: 5358968aa60b50cd57f72d08d575a5c9
+      size: 13327
+    - path: src/models/train_model.py
+      hash: md5
+      md5: 7a1dfd87b3da37fdd5db51d87b7683cb
+      size: 3319

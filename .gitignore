@@ -92,3 +92,7 @@ target/
 
 # csv files
 *.csv
+
+# other folders
+mlruns
+catboost_info
