@@ -11,8 +11,7 @@ USE_FEATURES = (
     'repair_type',
     'home_type',
     'year_build',
-    'max_floors',
-    'passanger_elevator'
+    'max_floors'
 )
 
 TARGET_FEATURE = 'price'
@@ -49,7 +48,12 @@ def make_feature(
             )
 
     if target_col:
+        df_features[target_col] /= 1_000_000
         df_features[target_col] = df_features[target_col].astype(float)
+
+    # Изменяем тип данных столбцов
+    df_features['room_count'] = df_features['room_count'].astype(int)
+    df_features['year_build'] = df_features['year_build'].astype(int)
 
     df_features.to_csv(path_save, index=False)
 

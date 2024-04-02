@@ -30,3 +30,10 @@ stages:
     outs:
       - data/processed/train_houses.csv
       - data/processed/test_houses.csv
+
+  train_model:
+    cmd: python src/models/train_model.py
+    deps:
+      - src/models/train_model.py
+      - data/processed/train_houses.csv
+      - data/processed/test_houses.csv

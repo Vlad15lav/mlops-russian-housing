@@ -11,8 +11,8 @@ cache:
 
 stages:
   - linter
-  - test-data
   - pytest
+  - data-test
   # - build
   # - deploy
 
@@ -31,26 +31,27 @@ linter_job:
     - flake8 ./src
     - flake8 ./test
     - flake8 ./dags
+    - flake8 ./docker
 
 data_quality_job:
-  stage: test-data
-  tags:
-    - test-data
-  script:
-    - echo "Starting DVC check..."
-    - pip install dvc, dvc_s3
-    - dvc pull
-    - dvc repro
-
-pytest_job:
   stage: pytest
   tags:
-    - test-code
+    - test
   script:
     - echo "Starting pytest..."
     - pip install dvc, dvc_s3, pandas, pytest, great_expectations
     - dvc pull
     - pytest ./test
+
+data_pipline_job:
+  stage: data-test
+  tags:
+    - data
+  script:
+    - echo "Starting DVC check..."
+    - pip install dvc, dvc_s3
+    - dvc pull
+    - dvc repro
 
 # build_job:
 #   stage: build
