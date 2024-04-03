@@ -1,35 +1,36 @@
 version: '3.7'
 
 services:  
-  # Fast API backend сервер
+  # Сервис модели MLFlow
   model_service:
     container_name: model_service
     build: ./docker/model_service
     image: model_service
     environment:
-      MLFLOW_TRACKING_URI: "http://mlflow:5000"
+      MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI}
     command: >
       uvicorn server:app --host 0.0.0.0 --port 80
     ports:
-      - "8080:80"
+      - "8088:80"
     networks:
       - minio_net
       - app_net
 
   # Web сервис Streamlit
-  # web_app:
-  #   container_name: web_app
-  #   build: ./docker/web_app
-  #   image: web_app
-  #   restart: always
-  #   command: >
-  #     streamlit run web.app
-  #   ports:
-  #     - "8501:8501"
-  #   networks:
-  #     - app_net
-  #   depends_on:
-  #     - model_service
+  web_app:
+    container_name: web_app
+    build: ./docker/web_app
+    image: web_app
+    environment:
+      MODEL_API_URL: ${MODEL_API_URL}
+    command: >
+      streamlit run web.py --server.port 8501
+    ports:
+      - "8501:8501"
+    networks:
+      - app_net
+    depends_on:
+      - model_service
 
 networks:
   minio_net:
