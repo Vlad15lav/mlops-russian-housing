@@ -66,21 +66,21 @@ build_job:
   stage: build
   tags: 
     - deploy
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  only:
+  - master
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - echo $CI_COMMIT_SHA
-    - docker build -f ./docker/model_service -t $REGISTRY_URL/dev/model_service:$CI_COMMIT_SHA .
+    - docker build -f ./docker/model_service/Dockerfile -t $REGISTRY_URL/dev/model_service:$CI_COMMIT_SHA .
     - docker push "$REGISTRY_URL/dev/model_service:$CI_COMMIT_SHA"
 
 deploy_job:
   stage: deploy
   tags:
     - deploy
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
+  only:
+    - master
   variables:
     CONTAINER_PREFIX: dev
   before_script:
