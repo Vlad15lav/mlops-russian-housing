@@ -9,12 +9,15 @@ cache:
     - .cache/pip
     - env/
 
+variables:
+  REGISTRY_URL: "registry.gitlab.com/vlad15lav/mlops-russian-housing"
+
 stages:
   - linter
   - pytest
   - data-test
-  # - build
-  # - deploy
+  - build
+  - deploy
 
 before_script:
   - python --version
@@ -25,6 +28,8 @@ linter_job:
   stage: linter
   tags:
     - test
+  rules:
+    - if: '$CI_COMMIT_BRANCH != "master"' 
   script:
     - echo "Starting linters..."
     - pip install flake8
@@ -37,6 +42,8 @@ data_quality_job:
   stage: pytest
   tags:
     - test
+  rules:
+    - if: '$CI_COMMIT_BRANCH != "master"' 
   script:
     - echo "Starting pytest..."
     - pip install dvc, dvc_s3, pandas, pytest, great_expectations
@@ -47,26 +54,38 @@ data_pipline_job:
   stage: data-test
   tags:
     - data
+  rules:
+    - if: '$CI_COMMIT_BRANCH != "master"' 
   script:
     - echo "Starting DVC check..."
     - pip install dvc, dvc_s3
     - dvc pull
     - dvc repro
 
-# build_job:
-#   stage: build
-#   tags: 
-#     - deploy
-#   rules:
-#     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
-#   script:
-#     - echo "Starting build docker image..."
+build_job:
+  stage: build
+  tags: 
+    - deploy
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - echo $CI_COMMIT_SHA
+    - docker build -f ./docker/model_service -t $REGISTRY_URL/dev/model_service:$CI_COMMIT_SHA
+    - docker push "$REGISTRY_URL/dev/model_service:$CI_COMMIT_SHA"
 
-# deploy_job:
-#   stage: deploy
-#   tags:
-#     - deploy
-#   rules:
-#     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
-#   script:
-#     - echo "Starting deploy application..."
+deploy_job:
+  stage: deploy
+  tags:
+    - deploy
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
+  variables:
+    CONTAINER_PREFIX: dev
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - echo $CI_COMMIT_SHA
+    - docker rm $(docker stop $(docker ps -a -q --filter name=model_service)); if (-not $?) {cd .}
+    - docker-compose  -f docker-compose-app.yaml up model_service -d
