@@ -3,7 +3,7 @@ import pandas as pd
 from pydantic import BaseModel
 
 
-class Quary(BaseModel):
+class Query(BaseModel):
     """Класс для валидации входных данных
     """
     city_name: str
@@ -18,10 +18,10 @@ class Quary(BaseModel):
 
 
 class DataLoader:
-    def preproccesing_data(self, quary):
+    def preproccesing_data(self, query):
         """Обработка входных данных для модели
         """
-        df_data = pd.DataFrame([quary.dict()])
+        df_data = pd.DataFrame([query.dict()])
 
         # Заменяем категориальные значения для модели
         df_data["city_name"] = df_data["city_name"].map({
