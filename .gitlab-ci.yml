@@ -29,7 +29,7 @@ linter_job:
   tags:
     - test
   rules:
-    - if: '$CI_COMMIT_BRANCH != "master"' 
+    - if: '$CI_COMMIT_BRANCH != "master" && $CI_PIPELINE_SOURCE != "merge_request_event"' 
   script:
     - echo "Starting linters..."
     - pip install flake8
@@ -43,7 +43,7 @@ data_quality_job:
   tags:
     - test
   rules:
-    - if: '$CI_COMMIT_BRANCH != "master"' 
+    - if: '$CI_COMMIT_BRANCH != "master" && $CI_PIPELINE_SOURCE != "merge_request_event"'
   script:
     - echo "Starting pytest..."
     - pip install dvc, dvc_s3, pandas, pytest, great_expectations
@@ -55,7 +55,7 @@ data_pipline_job:
   tags:
     - data
   rules:
-    - if: '$CI_COMMIT_BRANCH != "master"' 
+    - if: '$CI_COMMIT_BRANCH != "master" && $CI_PIPELINE_SOURCE != "merge_request_event"'
   script:
     - echo "Starting DVC check..."
     - pip install dvc, dvc_s3
@@ -67,12 +67,12 @@ build_job:
   tags: 
     - deploy
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - echo $CI_COMMIT_SHA
-    - docker build -f ./docker/model_service -t $REGISTRY_URL/dev/model_service:$CI_COMMIT_SHA
+    - docker build -f ./docker/model_service -t $REGISTRY_URL/dev/model_service:$CI_COMMIT_SHA .
     - docker push "$REGISTRY_URL/dev/model_service:$CI_COMMIT_SHA"
 
 deploy_job:
