@@ -72,7 +72,7 @@ build_job:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - echo $CI_COMMIT_SHA
-    - docker build -f ./docker/model_service/Dockerfile -t $REGISTRY_URL/dev/model_service:$CI_COMMIT_SHA .
+    - docker build -t $REGISTRY_URL/dev/model_service:$CI_COMMIT_SHA ./docker/model_service/
     - docker push "$REGISTRY_URL/dev/model_service:$CI_COMMIT_SHA"
 
 deploy_job:
@@ -81,8 +81,6 @@ deploy_job:
     - deploy
   only:
     - master
-  variables:
-    CONTAINER_PREFIX: dev
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
