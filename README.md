@@ -20,15 +20,15 @@
 Укажите значения для набора переменных среды в ".env_example":
 ```shell
 # Данные для AirFlow (id -u)
-AIRFLOW_UID=197613
+AIRFLOW_UID=<...>
 AIRFLOW_S3_BUCKET=airflow-data
 
 # Данные для S3 Minio
-AWS_ACCESS_KEY_ID=minio_user
-AWS_SECRET_ACCESS_KEY=minio_password
+AWS_ACCESS_KEY_ID=<...>
+AWS_SECRET_ACCESS_KEY=<...>
 AWS_S3_BUCKET=mlflow-arts
-MINIO_ROOT_USER=minioroot
-MINIO_ROOT_PASSWORD=minioroot
+MINIO_ROOT_USER=<...>
+MINIO_ROOT_PASSWORD=<...>
 ...
 ```
 
