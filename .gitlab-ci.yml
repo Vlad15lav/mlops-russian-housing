@@ -54,7 +54,7 @@ data_quality_job:
     - dvc pull
     - pytest ./test
 
-data_pipline_job:
+data_pipeline_job:
   extends: .create_environment
   stage: data-test
   tags:
