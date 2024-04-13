@@ -5,8 +5,9 @@ services:
   model_service:
     container_name: model_service
     image: $REGISTRY_URL/dev/model_service:$CI_COMMIT_SHA
+    restart: on-failure:3
     environment:
-      MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI}
+      MLFLOW_TRACKING_URI: http://mlflow:5000
     command: >
       uvicorn server:app --host 0.0.0.0 --port 80
     ports:
@@ -21,7 +22,7 @@ services:
     build: ./docker/web_app
     image: web_app
     environment:
-      MODEL_API_URL: ${MODEL_API_URL}
+      MODEL_API_URL: http://model_service:80
     command: >
       streamlit run web.py --server.port 8501
     ports:
