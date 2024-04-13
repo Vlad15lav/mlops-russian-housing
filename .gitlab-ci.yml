@@ -19,55 +19,69 @@ stages:
   - build
   - deploy
 
-before_script:
-  - python --version
-  - python -m venv ./env
-  - ./env/Scripts/activate
+.create_environment:
+  before_script:
+    - python --version
+    - python -m venv ./env
+    - ./env/Scripts/activate
 
 linter_job:
+  extends: .create_environment
   stage: linter
   tags:
     - test
   rules:
-    - if: '$CI_COMMIT_BRANCH != "master" && $CI_PIPELINE_SOURCE != "merge_request_event"' 
+    - if: '$CI_COMMIT_BRANCH != "master" && $CI_PIPELINE_SOURCE != "merge_request_event"'
+    - changes:
+      - /*.py
   script:
     - echo "Starting linters..."
     - pip install flake8
-    - flake8 ./src
-    - flake8 ./test
-    - flake8 ./dags
-    - flake8 ./docker
+    - flake8 src test dags docker
 
 data_quality_job:
+  extends: .create_environment
   stage: pytest
   tags:
     - test
   rules:
     - if: '$CI_COMMIT_BRANCH != "master" && $CI_PIPELINE_SOURCE != "merge_request_event"'
+    - changes:
+      - dvc.lock
   script:
     - echo "Starting pytest..."
-    - pip install dvc, dvc_s3, pandas, pytest, great_expectations
+    - pip install -r requirements.txt
     - dvc pull
     - pytest ./test
 
-data_pipline_job:
+data_pipeline_job:
+  extends: .create_environment
   stage: data-test
   tags:
     - data
   rules:
     - if: '$CI_COMMIT_BRANCH != "master" && $CI_PIPELINE_SOURCE != "merge_request_event"'
+    - changes:
+      - dvc.lock
+      - test/*
   script:
     - echo "Starting DVC check..."
-    - pip install dvc, dvc_s3
+    - pip install -r requirements.txt
     - dvc pull
     - dvc repro
+
 
 build_job:
   stage: build
   tags: 
     - deploy
   only:
-  - master
+    refs:
+      - master
+    changes:
+      - dvc.lock
+      - docker-compose-app.yaml
+      - docker/*
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
@@ -80,7 +94,12 @@ deploy_job:
   tags:
     - deploy
   only:
-    - master
+    refs:
+      - master
+    changes:
+      - dvc.lock
+      - docker-compose-app.yaml
+      - docker/*
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
