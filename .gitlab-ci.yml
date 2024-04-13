@@ -1,5 +1,9 @@
 image: python:3.11
 
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  REGISTRY_URL: "registry.gitlab.com/vlad15lav/mlops-russian-housing"
+
 cache:
   key:
     files:
@@ -9,8 +13,11 @@ cache:
     - .cache/pip
     - env/
 
-variables:
-  REGISTRY_URL: "registry.gitlab.com/vlad15lav/mlops-russian-housing"
+.create_environment:
+  before_script:
+    - python --version
+    - python -m venv ./env
+    - ./env/Scripts/activate
 
 stages:
   - linter
@@ -19,12 +26,8 @@ stages:
   - build
   - deploy
 
-.create_environment:
-  before_script:
-    - python --version
-    - python -m venv ./env
-    - ./env/Scripts/activate
 
+# Continuous Integration
 linter_job:
   extends: .create_environment
   stage: linter
@@ -32,8 +35,8 @@ linter_job:
     - test
   rules:
     - if: '$CI_COMMIT_BRANCH != "master" && $CI_PIPELINE_SOURCE != "merge_request_event"'
-    - changes:
-      - /*.py
+      changes:
+        - /*.py
   script:
     - echo "Starting linters..."
     - pip install flake8
@@ -46,8 +49,8 @@ data_quality_job:
     - test
   rules:
     - if: '$CI_COMMIT_BRANCH != "master" && $CI_PIPELINE_SOURCE != "merge_request_event"'
-    - changes:
-      - dvc.lock
+      changes:
+        - dvc.lock
   script:
     - echo "Starting pytest..."
     - pip install -r requirements.txt
@@ -61,9 +64,9 @@ data_pipeline_job:
     - data
   rules:
     - if: '$CI_COMMIT_BRANCH != "master" && $CI_PIPELINE_SOURCE != "merge_request_event"'
-    - changes:
-      - dvc.lock
-      - test/*
+      changes:
+        - dvc.lock
+        - test/*
   script:
     - echo "Starting DVC check..."
     - pip install -r requirements.txt
@@ -71,6 +74,7 @@ data_pipeline_job:
     - dvc repro
 
 
+# Continuous Deployment
 build_job:
   stage: build
   tags: 
