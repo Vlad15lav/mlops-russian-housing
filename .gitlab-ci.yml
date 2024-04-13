@@ -70,13 +70,15 @@ data_pipline_job:
     - dvc pull
     - dvc repro
 
+
 build_job:
   stage: build
   tags: 
     - deploy
   only:
-    - master
-    - changes:
+    refs:
+      - master
+    changes:
       - dvc.lock
       - docker-compose-app.yaml
       - docker/*
@@ -92,8 +94,9 @@ deploy_job:
   tags:
     - deploy
   only:
-    - master
-    - changes:
+    refs:
+      - master
+    changes:
       - dvc.lock
       - docker-compose-app.yaml
       - docker/*
