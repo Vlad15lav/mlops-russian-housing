@@ -105,4 +105,4 @@ deploy_job:
   script:
     - echo $CI_COMMIT_SHA
     - docker rm $(docker stop $(docker ps -a -q --filter name=model_service)); if (-not $?) {cd .}
-    - docker-compose  -f docker-compose-app.yaml up model_service -d
+    - docker-compose -f docker-compose-app.yaml up -d
