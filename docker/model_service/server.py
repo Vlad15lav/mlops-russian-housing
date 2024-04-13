@@ -1,6 +1,6 @@
 import os
 from fastapi import FastAPI
-from data_class import DataLoader, Quary
+from data_class import DataLoader, Query
 from model_class import Model
 
 app = FastAPI()
@@ -10,9 +10,9 @@ model = Model(data_class=DataLoader(),
 
 
 @app.post("/predict")
-async def get_predict(quary: Quary):
+async def get_predict(query: Query):
     # Запрос предсказание цены
-    return model.predict(quary)
+    return model.predict(query)
 
 
 @app.get("/model_info")

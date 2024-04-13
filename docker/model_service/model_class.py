@@ -3,7 +3,7 @@ import mlflow
 import pandas as pd
 
 from mlflow import MlflowClient
-from data_class import DataLoader, Quary
+from data_class import DataLoader, Query
 
 
 class Model:
@@ -41,10 +41,10 @@ class Model:
             f"models:/{self.model_name}/{self.version}"
             )
 
-    def get_data(self, quary: Quary) -> pd.DataFrame:
+    def get_data(self, query: Query) -> pd.DataFrame:
         """Преобразование данных для Inference
         """
-        return self.data_class.preproccesing_data(quary)
+        return self.data_class.preproccesing_data(query)
 
     def singal_predict(self, data: pd.DataFrame) -> float:
         """Предсказание для одного элемента
@@ -52,10 +52,10 @@ class Model:
         predict = self.model.predict(data)[0]
         return predict
 
-    def predict(self, quary: Quary) -> dict:
+    def predict(self, query: Query) -> dict:
         """Предсказание модели
         """
-        data = self.get_data(quary)
+        data = self.get_data(query)
 
         result = {}
         for i in range(len(data)):
