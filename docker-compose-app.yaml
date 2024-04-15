@@ -32,6 +32,35 @@ services:
     depends_on:
       - model_service
 
+  # Мониторинг сервис
+  prometheus:
+    container_name: dev_prometheus
+    image: prom/prometheus:v2.51.2
+    restart: unless-stopped
+    hostname: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+
+  # Сервис визуализации метрик
+  grafana:
+    container_name: dev_grafana
+    image: grafana/grafana:10.4.2
+    restart: unless-stopped
+    hostname: grafana
+    user: "472"
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./monitoring/datasource.yml:/etc/grafana/provisioning/datasource.yml
+    env_file:
+      - ./monitoring/config.monitoring
+
 networks:
   minio_net:
     name: minio_net
