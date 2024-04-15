@@ -1,9 +1,15 @@
 import os
+
 from fastapi import FastAPI
 from data_class import DataLoader, Query
 from model_class import Model
+from prometheus_fastapi_instrumentator import Instrumentator
 
+# Fast API приложение
 app = FastAPI()
+# Prometheus мониторинг
+Instrumentator().instrument(app).expose(app)
+# Модель для предсказания
 model = Model(data_class=DataLoader(),
               model_name='catboost_model',
               version=None)

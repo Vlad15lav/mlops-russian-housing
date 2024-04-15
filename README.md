@@ -69,6 +69,7 @@ docker-compose -f ./docker-compose-app.yaml up -d
 ```
 
 Получить предсказание стоимости жилья по ссылке [localhost:8501](http://localhost:8501).
+Мониторинг performance модели по ссылке [localhost:3000](http://localhost:3000).
 
 Примечание:
 - Для валидации модели можно использовать пример [ноутбука](/notebooks/feature_analysis.ipynb).
